@@ -4,7 +4,7 @@
     ref="currencyAutocomplete"
     :flow="flow"
     hide-details="auto"
-    :items="currencies"
+    :items="currenciesNames"
     auto-select-first
     outlined
     dense
@@ -28,18 +28,22 @@ export default {
   },
   data() {
     return {
-      currencies: [],
+      currenciesNames: [],
+      currenciesCodes: [],
       oldValue: null,
     };
   },
   created() {
     worldCurrencies.forEach((el) => {
-      this.currencies.push(el.name);
+      this.currenciesNames.push(el.name);
+      this.currenciesCodes.push(el.cc);
     });
   },
   methods: {
-    getInput(val) {
-      this.$emit('update', val);
+    getInput(currencyName) {
+      const currencyCode = this.currenciesCodes[this.currenciesNames.indexOf(currencyName)]
+        .toLowerCase();
+      this.$emit('update', [currencyName, currencyCode]);
     },
   },
 };
