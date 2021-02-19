@@ -1,25 +1,31 @@
 <template>
-  <v-app>
+  <v-app >
     <app-bar />
-    <drawer :key="$vuetify.breakpoint.xs"/>
-    <v-content>
+    <app-drawer :key="!$vuetify.breakpoint.xs"/>
+    <v-main class="grey lighten-3">
       <v-container fluid>
         <v-fade-transition mode="out-in">
           <router-view />
         </v-fade-transition>
       </v-container>
-    </v-content>
-    <app-footer />
+    </v-main>
+    <app-footer :key="$vuetify.breakpoint.xs"/>
   </v-app>
 </template>
 
 <script>
 import AppBar from './components/AppBar.vue';
+import AppDrawer from './components/AppDrawer.vue';
 import AppFooter from './components/AppFooter.vue';
-import Drawer from './components/Drawer.vue';
 
 export default {
-  components: { Drawer, AppBar, AppFooter },
+  components: { AppBar, AppFooter, AppDrawer },
   name: 'App',
 };
 </script>
+
+<style lang="scss">
+  body {
+    background: grey;
+  }
+</style>

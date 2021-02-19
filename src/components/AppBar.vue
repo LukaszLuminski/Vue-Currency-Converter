@@ -3,11 +3,11 @@
     id="default-app-bar"
     app
     class="v-bar--underline on-top"
-    height="85"
+    height="75"
   >
-  <v-app-bar absolute color="primary" height="85">
+  <v-app-bar absolute color="primary" height="75">
     <v-icon class="white--text ml-2 mr-3" large>mdi-swap-horizontal</v-icon>
-    <v-toolbar-title class="white--text font-weight-light text-h5">
+    <v-toolbar-title class="white--text font-weight-light text-h6 text-sm-h5">
       Vue Currency Converter
     </v-toolbar-title>
 

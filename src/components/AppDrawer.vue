@@ -1,17 +1,16 @@
 <template>
   <v-navigation-drawer
-      width="250px"
+      width="235px"
       :permanent="$vuetify.breakpoint.xs ? false : true"
       app
       class="d-none d-sm-flex"
     >
-      <v-list class="pt-2">
+      <v-list class="pt-3 pl-3">
         <v-list-item
-          v-for="([icon, text], i) in items"
+          v-for="([icon, text, to], i) in items"
           :key="i"
           link
-          @click="i === 0 ?
-          $router.push({ path: '/'}) : $router.push({ path: '/saved-conversions'})"
+          @click="$router.push({ path: to })"
         >
           <v-list-item-icon>
             <v-icon>{{ icon }}</v-icon>
@@ -26,12 +25,12 @@
 </template>
 
 <script>
+import navItems from '../utils/navItems';
+
 export default {
+  name: 'AppDrawer',
   data: () => ({
-    items: [
-      ['mdi-cash-multiple', 'Converter'],
-      ['mdi-format-list-bulleted', 'Saved conversions'],
-    ],
+    items: navItems,
   }),
 };
 </script>
