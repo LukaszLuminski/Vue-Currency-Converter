@@ -6,6 +6,7 @@
     class="mb-2"
     dense
     :value="value"
+    @input="update"
   />
 </template>
 
@@ -14,25 +15,23 @@ export default {
   name: 'ValidatedValue',
   props: {
     value: {
-      type: Number,
+      type: undefined,
     },
   },
   methods: {
     isNumber(evt) {
       const event = evt || window.event;
-      let bool;
       const charCode = event.which ? event.which : event.keyCode;
       if (
         (charCode === 46 && evt.path[0].value.includes('.'))
         || (charCode > 31 && (charCode < 48 || charCode > 57) && charCode !== 46)
       ) {
         event.preventDefault();
-        bool = false;
-      } else {
-        bool = true;
       }
-      console.log(evt.path[0].value);
-      return bool;
+    },
+    update(val) {
+      console.log(val);
+      this.$emit('update', val);
     },
   },
 };
