@@ -252,7 +252,7 @@ export default {
               currency_from: this.currencyFromName,
               currency_to: this.currencyToName,
               rate_date: res.data[curr2].date.toString().slice(5, 16),
-              rate_time: this.date.slice(17, 29),
+              rate_time: res.data[curr2].date.toString().slice(17, 29),
             };
             this.addConversion(obj);
           }
