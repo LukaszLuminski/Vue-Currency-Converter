@@ -13,11 +13,7 @@
 <script>
 export default {
   name: 'ValidatedValue',
-  props: {
-    value: {
-      type: undefined,
-    },
-  },
+  props: ['value'],
   methods: {
     isNumber(evt) {
       const event = evt || window.event;
@@ -30,7 +26,6 @@ export default {
       }
     },
     update(val) {
-      console.log(val);
       this.$emit('update', val);
     },
   },

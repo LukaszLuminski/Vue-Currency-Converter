@@ -18,14 +18,7 @@ import worldCurrencies from '../utils/worldCurrencies';
 
 export default {
   name: 'ValidatedCurrency',
-  props: {
-    value: {
-      type: String,
-    },
-    flow: {
-      type: String,
-    },
-  },
+  props: ['value', 'flow'],
   data() {
     return {
       currenciesNames: [],

@@ -28,17 +28,7 @@
 export default {
   name: 'ErrorDialog',
 
-  props: {
-    show: {
-      type: Boolean,
-    },
-    maxWidth: {
-      type: String,
-    },
-    message: {
-      type: null,
-    },
-  },
+  props: ['show', 'maxWidth', 'message'],
   methods: {
     closeDialog() {
       this.$emit('close');

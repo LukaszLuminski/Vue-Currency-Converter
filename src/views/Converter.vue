@@ -6,12 +6,17 @@
       max-width="365"
     >
       <v-card-text class="pb-3">
-        <div class="pb-1">{{ response ? previousValueFrom + ' '
-          + currencyFromName + " equals" : 'An error has occured...'}} </div>
+        <div class="pb-1">
+          {{
+            response
+              ? previousValueFrom + " " + currencyFromName + " equals"
+              : "An error has occured..."
+          }}
+        </div>
         <p class="display-1 text--primary mb-1">
-          {{ response ? previousValueTo + ' ' + currencyToName : 'Sorry about that!'}}
+          {{ response ? previousValueTo + " " + currencyToName : "Sorry about that!" }}
         </p>
-        <p>{{ response ? date : 'But don\'t worry! We\'ll be back soon.'}}</p>
+        <p>{{ response ? date : "But don't worry! We'll be back soon." }}</p>
         <v-row>
           <v-col class="pr-2">
             <validated-value :value="valueFrom" @update="updateValueFrom" />
@@ -56,6 +61,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import axiosCall from '../utils/axiosCall';
 import ValidatedCurrency from '../components/ValidatedCurrency.vue';
 import ValidatedValue from '../components/ValidatedValue.vue';
@@ -87,8 +93,7 @@ export default {
       .then((res) => {
         this.currencyFromCode = 'gbp';
         this.currencyToCode = 'eur';
-        const value = (this.previousValueFrom * res.data[this.currencyToCode].rate)
-          .toFixed(2);
+        const value = (this.previousValueFrom * res.data[this.currencyToCode].rate).toFixed(2);
         this.valueTo = value;
         this.previousValueTo = value;
         this.date = res.data.eur.date.toString().slice(4);
@@ -110,6 +115,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions('conversions', ['addConversion']),
     updateValueFrom(val) {
       this.valueFrom = val;
       if (this.valueFrom) this.convert('from');
@@ -132,7 +138,7 @@ export default {
       this.currencyChange = true;
       this.convert('from');
     },
-    updateCurrencyToName(val) {
+    async updateCurrencyToName(val) {
       const newName = val[0];
       const newCode = val[1];
       const oldName = this.currencyToName;
@@ -164,6 +170,17 @@ export default {
             this.valueFrom = (this.valueTo * res.data[curr2].rate).toFixed(2);
           }
           this.date = res.data[curr2].date.toString().slice(4);
+          if (this.currencyChange) {
+            const obj = {
+              value_from: this.valueFrom,
+              value_to: this.valueTo,
+              currency_from: this.currencyFromName,
+              currency_to: this.currencyToName,
+              rate_date: this.date.slice(-12),
+              rate_time: this.date.slice(-12),
+            };
+            this.addConversion(obj);
+          }
           this.response = true;
           this.loading = false;
           this.currencyChange = false;
