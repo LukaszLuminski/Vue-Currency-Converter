@@ -8,30 +8,53 @@
       <v-card-text class="pb-3">
         <div class="pb-1">
           {{
-            response
-              ? previousValueFrom + " " + currencyFromName + " equals"
+            initialResponse
+              ? previousValueFrom + " " + previousCurrencyFromName + " equals"
               : "An error has occured..."
           }}
         </div>
         <p class="display-1 text--primary mb-1">
-          {{ response ? previousValueTo + " " + currencyToName : "Sorry about that!" }}
+          {{ initialResponse ?
+          previousValueTo + " " + previousCurrencyToName : "Sorry about that!" }}
         </p>
-        <p>{{ response ? date : "But don't worry! We'll be back soon." }}</p>
+        <v-row
+          ><v-col class="pb-0"
+            ><p class="text-no-wrap">
+              {{ initialResponse ? date : "But don't worry! We'll be back soon." }}</p></v-col
+          ><v-col class="py-0 mt-1">
+            <v-progress-circular indeterminate v-if="currencyChange && currencyToName"
+             color="primary" class="mr-8"/></v-col
+        ></v-row>
         <v-row>
-          <v-col class="pr-2">
-            <validated-value :value="valueFrom" @update="updateValueFrom" />
-            <validated-value :value="valueTo" @update="updateValueTo" />
+          <v-col class="pr-2 pt-0">
+            <validated-value
+              :value="valueFrom"
+              placeholder="Amount from"
+              flow="from"
+              @update="updateValueFrom"
+            />
+            <validated-value
+              :value="valueTo"
+              placeholder="--"
+              :disabled="started ? false : true"
+              flow="to"
+              @update="updateValueTo"
+            />
           </v-col>
-          <v-col class="pl-2">
+          <v-col class="pl-2 pt-0">
             <validated-currency
               ref="currencyFromName"
+              placeholder="Currency from"
               v-model="currencyFromName"
+              :disabled="valueFrom ? false : true"
               flow="from"
               @update="updateCurrencyFromName"
             />
             <validated-currency
               ref="currencyToName"
               v-model="currencyToName"
+              :disabled="currencyFromName ? false : true"
+              placeholder="Currency to"
               flow="to"
               @update="updateCurrencyToName"
             />
@@ -73,19 +96,22 @@ export default {
   data: () => ({
     errorDialog: false,
     message: null,
-    valueFrom: 1,
+    valueFrom: null,
     valueTo: null,
-    previousValueFrom: 1,
+    previousValueFrom: null,
     previousValueTo: null,
-    currencyFromName: 'Pound sterling',
-    currencyToName: 'Euro',
+    previousCurrencyFromName: null,
+    previousCurrencyToName: null,
+    currencyFromName: '',
+    currencyToName: null,
     currencyFromCode: null,
     currencyToCode: null,
     loading: false,
     rate: null,
     date: null,
-    response: false,
+    initialResponse: false,
     currencyChange: false,
+    started: false,
   }),
   async created() {
     this.loading = true;
@@ -93,11 +119,14 @@ export default {
       .then((res) => {
         this.currencyFromCode = 'gbp';
         this.currencyToCode = 'eur';
-        const value = (this.previousValueFrom * res.data[this.currencyToCode].rate).toFixed(2);
-        this.valueTo = value;
-        this.previousValueTo = value;
+        this.previousValueFrom = 1;
+        this.previousValueTo = (
+          this.previousValueFrom * res.data[this.currencyToCode].rate
+        ).toFixed(2);
+        this.previousCurrencyFromName = 'Pound sterling';
+        this.previousCurrencyToName = 'Euro';
         this.date = res.data.eur.date.toString().slice(4);
-        this.response = true;
+        this.initialResponse = true;
         this.loading = false;
       })
       .catch((err) => {
@@ -108,9 +137,11 @@ export default {
   },
   watch: {
     currencyChange(val) {
-      if (val) {
+      if (val && this.valueFrom && this.currencyFromName && this.currencyToName) {
         this.previousValueFrom = this.valueFrom;
         this.previousValueTo = this.valueTo;
+        this.previousCurrencyFromName = this.currencyFromName;
+        this.previousCurrencyToName = this.currencyToName;
       }
     },
   },
@@ -118,25 +149,32 @@ export default {
     ...mapActions('conversions', ['addConversion']),
     updateValueFrom(val) {
       this.valueFrom = val;
-      if (this.valueFrom) this.convert('from');
+      this.convert('from');
     },
     updateValueTo(val) {
       this.valueTo = val;
-      if (this.valueTo) this.convert('to');
+      this.convert('to');
     },
-    updateCurrencyFromName(val) {
+    async updateCurrencyFromName(val) {
       const newName = val[0];
       const newCode = val[1];
       const oldName = this.currencyFromName;
       const oldCode = this.currencyFromCode;
       this.currencyFromName = newName;
       this.currencyFromCode = newCode;
-      if (this.currencyFromName === this.currencyToName) {
+      if (this.currencyFromName === this.currencyToName && oldName && oldCode) {
         this.currencyToName = oldName;
         this.currencyToCode = oldCode;
       }
       this.currencyChange = true;
-      this.convert('from');
+      if (this.valueFrom && this.currencyToName) {
+        this.previousValueFrom = this.valueFrom;
+        this.previousCurrencyFromName = this.currencyFromName;
+        this.previousCurrencyToName = this.currencyToName;
+        await this.convert('from').then(() => {
+          this.previousValueTo = this.valueTo;
+        });
+      }
     },
     async updateCurrencyToName(val) {
       const newName = val[0];
@@ -145,14 +183,32 @@ export default {
       const oldCode = this.currencyToCode;
       this.currencyToName = newName;
       this.currencyToCode = newCode;
-      if (this.currencyToName === this.currencyFromName) {
+      if (this.currencyToName === this.currencyFromName && oldName && oldCode) {
         this.currencyFromName = oldName;
         this.currencyFromCode = oldCode;
       }
       this.currencyChange = true;
-      this.convert('to');
+      if (this.valueTo) {
+        this.previousValueTo = this.valueTo;
+        this.previousCurrencyFromName = this.currencyFromName;
+        this.previousCurrencyToName = this.currencyToName;
+        await this.convert('to').then(() => {
+          this.previousValueFrom = this.valueFrom;
+        });
+      } else {
+        this.previousValueFrom = this.valueFrom;
+        this.previousCurrencyFromName = this.currencyFromName;
+        this.previousCurrencyToName = this.currencyToName;
+        await this.convert('from').then(() => {
+          this.previousValueTo = this.valueTo;
+        });
+      }
     },
     async convert(val) {
+      this.waiting = false;
+      if (this.valueFrom && this.currencyFromName && this.currencyToName) {
+        this.started = true;
+      }
       let curr1;
       let curr2;
       if (val === 'from') {
@@ -165,8 +221,10 @@ export default {
       await axiosCall('GET', curr1)
         .then((res) => {
           if (val === 'from') {
-            this.valueTo = (this.valueFrom * res.data[curr2].rate).toFixed(2);
-          } else {
+            if (this.currencyFromName && this.currencyToName) {
+              this.valueTo = (this.valueFrom * res.data[curr2].rate).toFixed(2);
+            }
+          } else if (this.valueTo) {
             this.valueFrom = (this.valueTo * res.data[curr2].rate).toFixed(2);
           }
           this.date = res.data[curr2].date.toString().slice(4);
@@ -176,12 +234,11 @@ export default {
               value_to: this.valueTo,
               currency_from: this.currencyFromName,
               currency_to: this.currencyToName,
-              rate_date: this.date.slice(-12),
-              rate_time: this.date.slice(-12),
+              rate_date: this.date.slice(12),
+              rate_time: this.date.slice(12),
             };
             this.addConversion(obj);
           }
-          this.response = true;
           this.loading = false;
           this.currencyChange = false;
         })

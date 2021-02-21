@@ -4,6 +4,8 @@
     hide-details="auto"
     outlined
     class="mb-2"
+    :placeholder="placeholder"
+    :disabled="flow === 'to' ? disabled : false"
     dense
     :value="value"
     @input="update"
@@ -13,7 +15,7 @@
 <script>
 export default {
   name: 'ValidatedValue',
-  props: ['value'],
+  props: ['value', 'placeholder', 'disabled', 'flow'],
   methods: {
     isNumber(evt) {
       const event = evt || window.event;

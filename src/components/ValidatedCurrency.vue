@@ -5,7 +5,9 @@
     :flow="flow"
     hide-details="auto"
     :items="currenciesNames"
+    :disabled="disabled"
     auto-select-first
+    :placeholder="placeholder"
     outlined
     dense
     class="mb-2"
@@ -18,7 +20,7 @@ import worldCurrencies from '../utils/worldCurrencies';
 
 export default {
   name: 'ValidatedCurrency',
-  props: ['value', 'flow'],
+  props: ['value', 'flow', 'placeholder', 'disabled'],
   data() {
     return {
       currenciesNames: [],

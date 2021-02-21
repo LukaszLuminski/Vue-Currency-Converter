@@ -28,9 +28,7 @@ const mutations = {
     Vue.delete(state.conversions, id);
   },
   addConversion(state, payload) {
-    console.log(payload);
     Vue.set(state.conversions, payload.id, payload.conversion);
-    console.log(state.conversions);
   },
   incrementIdNumber(state) {
     state.idNumber += 1;
