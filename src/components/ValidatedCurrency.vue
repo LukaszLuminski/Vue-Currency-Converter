@@ -1,5 +1,21 @@
 <template>
+  <v-select
+    v-if="this.$vuetify.breakpoint.xs"
+    :value="value"
+    ref="currencyAutocomplete"
+    :flow="flow"
+    hide-details="auto"
+    :items="currenciesNames"
+    :disabled="disabled"
+    auto-select-first
+    :placeholder="placeholder"
+    outlined
+    dense
+    class="mb-2"
+    @change="getInput"
+  />
   <v-autocomplete
+    v-else
     :value="value"
     ref="currencyAutocomplete"
     :flow="flow"

@@ -88,12 +88,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('conversions', ['getConversions']),
+    ...mapGetters(['getConversions']),
   },
   methods: {
-    ...mapActions('conversions', ['deleteConversion']),
-    deleteItem() {
-      console.log(Object.keys(this.conversions));
+    ...mapActions(['deleteConversion']),
+    deleteItem(item) {
+      const key = Object.keys(this.getConversions).find((k) => this.getConversions[k] === item);
+      this.deleteConversion(key);
     },
   },
 };

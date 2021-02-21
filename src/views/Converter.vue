@@ -146,7 +146,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('conversions', ['addConversion']),
+    ...mapActions(['addConversion', 'addCurrentData']),
     updateValueFrom(val) {
       this.valueFrom = val;
       this.convert('from');
@@ -158,13 +158,16 @@ export default {
     async updateCurrencyFromName(val) {
       const newName = val[0];
       const newCode = val[1];
-      const oldName = this.currencyFromName;
-      const oldCode = this.currencyFromCode;
       this.currencyFromName = newName;
       this.currencyFromCode = newCode;
-      if (this.currencyFromName === this.currencyToName && oldName && oldCode) {
-        this.currencyToName = oldName;
-        this.currencyToCode = oldCode;
+      if (this.currencyFromName === this.currencyToName) {
+        if (this.currencyToName !== 'Pound sterling') {
+          this.currencyToName = 'Pound sterling';
+          this.currencyToCode = 'gbp';
+        } else {
+          this.currencyToName = 'Euro';
+          this.currencyToCode = 'eur';
+        }
       }
       this.currencyChange = true;
       if (this.valueFrom && this.currencyToName) {
@@ -179,13 +182,16 @@ export default {
     async updateCurrencyToName(val) {
       const newName = val[0];
       const newCode = val[1];
-      const oldName = this.currencyToName;
-      const oldCode = this.currencyToCode;
       this.currencyToName = newName;
       this.currencyToCode = newCode;
-      if (this.currencyToName === this.currencyFromName && oldName && oldCode) {
-        this.currencyFromName = oldName;
-        this.currencyFromCode = oldCode;
+      if (this.currencyToName === this.currencyFromName) {
+        if (this.currencyFromName !== 'Pound sterling') {
+          this.currencyFromName = 'Pound sterling';
+          this.currencyFromCode = 'gbp';
+        } else {
+          this.currencyFromName = 'Euro';
+          this.currencyFromCode = 'eur';
+        }
       }
       this.currencyChange = true;
       if (this.valueTo) {

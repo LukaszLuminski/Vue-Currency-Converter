@@ -21,6 +21,12 @@ import AppFooter from './components/AppFooter.vue';
 export default {
   components: { AppBar, AppFooter, AppDrawer },
   name: 'App',
+  beforeCreate() {
+    this.$store.commit('initialiseStore');
+    this.$store.subscribe((mutation, state) => {
+      localStorage.setItem('store', JSON.stringify(state));
+    });
+  },
 };
 </script>
 

@@ -3,29 +3,23 @@ import Vue from 'vue';
 
 const state = {
   conversions: {
-    id1: {
-      value_from: '1',
-      value_to: '1.15',
-      currency_from: 'Pound sterling',
-      currency_to: 'Euro',
-      rate_date: '2020/12/19',
-      rate_time: '12:01',
-    },
-    id2: {
-      value_from: '1.15',
-      value_to: '1',
-      currency_from: 'Euro',
-      currency_to: 'Pound sterling',
-      rate_date: '2020/12/20',
-      rate_time: '12:01',
-    },
   },
-  idNumber: 3,
+  idNumber: 1,
 };
 
 const mutations = {
+  initialiseStore(state) {
+    if (localStorage.getItem('store')) {
+      this.replaceState(
+        Object.assign(state, JSON.parse(localStorage.getItem('store'))),
+      );
+    }
+  },
   deleteConversion(state, id) {
     Vue.delete(state.conversions, id);
+  },
+  deleteCurrentData(state) {
+    state.currentData = null;
   },
   addConversion(state, payload) {
     Vue.set(state.conversions, payload.id, payload.conversion);
@@ -36,8 +30,8 @@ const mutations = {
 };
 
 const actions = {
-  deleteConversion({ commit }, number) {
-    commit('deleteConversion', number);
+  deleteConversion({ commit }, id) {
+    commit('deleteConversion', id);
   },
   addConversion({ commit }, conversion) {
     commit('incrementIdNumber');
@@ -55,7 +49,6 @@ const getters = {
 };
 
 export default {
-  namespaced: true,
   state,
   getters,
   actions,

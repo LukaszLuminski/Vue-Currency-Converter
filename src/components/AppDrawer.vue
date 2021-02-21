@@ -10,7 +10,7 @@
           v-for="([icon, text, to], i) in items"
           :key="i"
           link
-          @click="$router.push({ path: to })"
+          @click="goTo(to)"
         >
           <v-list-item-icon>
             <v-icon>{{ icon }}</v-icon>
@@ -32,6 +32,13 @@ export default {
   data: () => ({
     items: navItems,
   }),
+  methods: {
+    goTo(val) {
+      if (this.$route.fullPath !== val) {
+        this.$router.push({ path: val });
+      }
+    },
+  },
 };
 </script>
 
