@@ -9,21 +9,27 @@
         <div class="pb-1">
           {{
             initialResponse
-              ? previousValueFrom + " " + previousCurrencyFromName + " equals"
+              ? formatPrice(previousValueFrom) + " " + previousCurrencyFromName + " equals"
               : "An error has occured..."
           }}
         </div>
         <p class="display-1 text--primary mb-1">
-          {{ initialResponse ?
-          previousValueTo + " " + previousCurrencyToName : "Sorry about that!" }}
+          {{
+            initialResponse ? formatPrice(previousValueTo)
+            + " " + previousCurrencyToName : "Sorry about that!"
+          }}
         </p>
         <v-row
           ><v-col class="pb-0"
             ><p class="text-no-wrap">
-              {{ initialResponse ? date : "But don't worry! We'll be back soon." }}</p></v-col
+              {{ initialResponse ? date : "But don't worry! We'll be back soon." }}
+            </p></v-col
           ><v-col class="py-0 mt-1">
-            <v-progress-circular indeterminate v-if="currencyChange && currencyToName"
-             color="primary" class="mr-8"/></v-col
+            <v-progress-circular
+              indeterminate
+              v-if="currencyChange && currencyToName"
+              color="primary"
+              class="mr-8"/></v-col
         ></v-row>
         <v-row>
           <v-col class="pr-2 pt-0">
@@ -146,6 +152,10 @@ export default {
     },
   },
   methods: {
+    formatPrice(value) {
+      const val = (value / 1).toFixed(2).replace('.', ',');
+      return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    },
     ...mapActions(['addConversion', 'addCurrentData']),
     updateValueFrom(val) {
       this.valueFrom = val;
