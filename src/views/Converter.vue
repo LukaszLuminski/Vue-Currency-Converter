@@ -131,6 +131,7 @@ export default {
         ).toFixed(2);
         this.previousCurrencyFromName = 'Pound sterling';
         this.previousCurrencyToName = 'Euro';
+        // this.date = res.data.eur.date.toString().slice(4);
         this.date = res.data.eur.date.toString().slice(4);
         this.initialResponse = true;
         this.loading = false;
@@ -250,8 +251,8 @@ export default {
               value_to: this.valueTo,
               currency_from: this.currencyFromName,
               currency_to: this.currencyToName,
-              rate_date: this.date.slice(12),
-              rate_time: this.date.slice(12),
+              rate_date: res.data[curr2].date.toString().slice(5, 16),
+              rate_time: this.date.slice(17, 29),
             };
             this.addConversion(obj);
           }
