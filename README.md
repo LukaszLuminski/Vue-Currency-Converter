@@ -26,7 +26,7 @@ When one of the currencies is set, a new conversion is being made and saved via 
 ### Validation
 
 User inputs of both - 'from' and 'to' - values are validated by the same rules, allowing only digits and a single dot. If identical currencies are chosen, one of them is immediately changed for a different one.
-Values in the converted header are displayed in currency format.
+Values in the converter header are displayed in currency format.
 
 ### Vuex
 
