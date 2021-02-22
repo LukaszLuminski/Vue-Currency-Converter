@@ -2,8 +2,6 @@
   <v-select
     v-if="this.$vuetify.breakpoint.xs"
     :value="value"
-    ref="currencyAutocomplete"
-    :flow="flow"
     hide-details="auto"
     :items="currenciesNames"
     :disabled="disabled"
@@ -17,8 +15,6 @@
   <v-autocomplete
     v-else
     :value="value"
-    ref="currencyAutocomplete"
-    :flow="flow"
     hide-details="auto"
     :items="currenciesNames"
     :disabled="disabled"
@@ -36,12 +32,11 @@ import worldCurrencies from '../utils/worldCurrencies';
 
 export default {
   name: 'ValidatedCurrency',
-  props: ['value', 'flow', 'placeholder', 'disabled'],
+  props: ['value', 'placeholder', 'disabled'],
   data() {
     return {
       currenciesNames: [],
       currenciesCodes: [],
-      oldValue: null,
     };
   },
   created() {

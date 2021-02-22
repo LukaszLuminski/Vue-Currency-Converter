@@ -1,6 +1,7 @@
 <template>
   <v-container class="converter-container">
     <v-card
+      v-if="initialResponse"
       :class="loading ? 'hidden' : ''"
       class="mx-auto mt-10 mt-sm-13 transition"
       max-width="365"
@@ -8,21 +9,17 @@
       <v-card-text class="pb-3">
         <div class="pb-1">
           {{
-            initialResponse
-              ? formatPrice(previousValueFrom) + " " + previousCurrencyFromName + " equals"
-              : "An error has occured..."
+            formatPrice(previousValueFrom) + " " + previousCurrencyFromName + " equals"
           }}
         </div>
         <p class="display-1 text--primary mb-1">
-          {{
-            initialResponse ? formatPrice(previousValueTo)
-            + " " + previousCurrencyToName : "Sorry about that!"
+          {{ formatPrice(previousValueTo) + " " + previousCurrencyToName
           }}
         </p>
         <v-row
           ><v-col class="pb-0"
             ><p class="text-no-wrap">
-              {{ initialResponse ? date : "But don't worry! We'll be back soon." }}
+              {{ date }}
             </p></v-col
           ><v-col class="py-0 mt-1">
             <v-progress-circular
@@ -53,7 +50,6 @@
               placeholder="Currency from"
               v-model="currencyFromName"
               :disabled="valueFrom ? false : true"
-              flow="from"
               @update="updateCurrencyFromName"
             />
             <validated-currency
@@ -61,7 +57,6 @@
               v-model="currencyToName"
               :disabled="currencyFromName ? false : true"
               placeholder="Currency to"
-              flow="to"
               @update="updateCurrencyToName"
             />
           </v-col>
@@ -84,7 +79,8 @@
       :show="errorDialog"
       :max-width="'450px'"
       :message="message"
-      @close="errorDialog = false"
+      @input="closeError"
+      @close="closeError"
     />
   </v-container>
 </template>
@@ -120,27 +116,7 @@ export default {
     started: false,
   }),
   async created() {
-    this.loading = true;
-    await axiosCall('GET', 'gbp')
-      .then((res) => {
-        this.currencyFromCode = 'gbp';
-        this.currencyToCode = 'eur';
-        this.previousValueFrom = 1;
-        this.previousValueTo = (
-          this.previousValueFrom * res.data[this.currencyToCode].rate
-        ).toFixed(2);
-        this.previousCurrencyFromName = 'Pound sterling';
-        this.previousCurrencyToName = 'Euro';
-        // this.date = res.data.eur.date.toString().slice(4);
-        this.date = res.data.eur.date.toString().slice(4);
-        this.initialResponse = true;
-        this.loading = false;
-      })
-      .catch((err) => {
-        this.loading = false;
-        this.errorDialog = true;
-        this.message = err;
-      });
+    this.getInitialData();
   },
   watch: {
     currencyChange(val) {
@@ -153,11 +129,41 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['addConversion', 'addCurrentData']),
+    async getInitialData() {
+      this.loading = true;
+      await axiosCall('GET', 'gbp')
+        .then((res) => {
+          this.currencyFromCode = 'gbp';
+          this.currencyToCode = 'eur';
+          this.previousValueFrom = 1;
+          this.previousValueTo = (
+            this.previousValueFrom * res.data[this.currencyToCode].rate
+          ).toFixed(2);
+          this.previousCurrencyFromName = 'Pound sterling';
+          this.previousCurrencyToName = 'Euro';
+          this.date = res.data.eur.date.toString().slice(4);
+          this.valueFrom = null;
+          this.valueTo = null;
+          this.currencyFromName = null;
+          this.currencyToName = null;
+          this.initialResponse = true;
+          this.loading = false;
+        })
+        .catch((err) => {
+          this.loading = false;
+          this.errorDialog = true;
+          this.message = err;
+        });
+    },
+    closeError() {
+      this.errorDialog = false;
+      this.getInitialData();
+    },
     formatPrice(value) {
       const val = (value / 1).toFixed(2).replace('.', ',');
       return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     },
-    ...mapActions(['addConversion', 'addCurrentData']),
     updateValueFrom(val) {
       this.valueFrom = val;
       this.convert('from');
@@ -270,7 +276,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .transition {
   transition: 0.4s;
 }
@@ -279,12 +285,15 @@ export default {
 }
 .loading {
   position: absolute;
-  top: 0;
+  top: 150px;
   left: 0;
   right: 0;
   bottom: 0;
 }
 .converter-container {
   position: relative;
+}
+.v-input__slot {
+  max-width: 150.1px;
 }
 </style>
