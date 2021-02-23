@@ -28,7 +28,7 @@
               color="primary"
               class="mr-8"/></v-col
         ></v-row>
-        <v-row>
+        <v-row class="converter-inputs">
           <v-col class="pr-2 pt-0">
             <validated-value
               :value="valueFrom"
@@ -293,7 +293,7 @@ export default {
 .converter-container {
   position: relative;
 }
-.v-input__slot {
-  max-width: 150.1px;
+.converter-inputs .v-input__slot {
+  max-width: 159px;
 }
 </style>
