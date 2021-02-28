@@ -32,7 +32,20 @@ import worldCurrencies from '../utils/worldCurrencies';
 
 export default {
   name: 'ValidatedCurrency',
-  props: ['value', 'placeholder', 'disabled'],
+  props: {
+    value: {
+      type: String,
+    },
+    placeholder: {
+      type: String,
+    },
+    disabled: {
+      type: Boolean,
+    },
+    flow: {
+      type: String,
+    },
+  },
   data() {
     return {
       currenciesNames: [],
@@ -49,7 +62,7 @@ export default {
     getInput(currencyName) {
       const currencyCode = this.currenciesCodes[this.currenciesNames.indexOf(currencyName)]
         .toLowerCase();
-      this.$emit('update', [currencyName, currencyCode]);
+      this.$emit('update', [this.flow, currencyName, currencyCode]);
     },
   },
 };

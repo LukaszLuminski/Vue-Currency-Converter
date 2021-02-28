@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import AppBar from './components/AppBar.vue';
 import AppDrawer from './components/AppDrawer.vue';
 import AppFooter from './components/AppFooter.vue';
@@ -26,6 +27,10 @@ export default {
     this.$store.subscribe((mutation, state) => {
       localStorage.setItem('store', JSON.stringify(state));
     });
+    this.deleteCurrentData();
+  },
+  methods: {
+    ...mapActions(['deleteCurrentData']),
   },
 };
 </script>

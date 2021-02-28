@@ -19,10 +19,13 @@ const mutations = {
     Vue.delete(state.conversions, id);
   },
   deleteCurrentData(state) {
-    state.currentData = null;
+    delete state.currentData;
   },
   addConversion(state, payload) {
     Vue.set(state.conversions, payload.id, payload.conversion);
+  },
+  addCurrentData(state, payload) {
+    Vue.set(state, 'currentData', payload);
   },
   incrementIdNumber(state) {
     state.idNumber += 1;
@@ -33,6 +36,9 @@ const actions = {
   deleteConversion({ commit }, id) {
     commit('deleteConversion', id);
   },
+  deleteCurrentData({ commit }) {
+    commit('deleteCurrentData');
+  },
   addConversion({ commit }, conversion) {
     commit('incrementIdNumber');
     commit('addConversion', {
@@ -40,11 +46,23 @@ const actions = {
       conversion,
     });
   },
+  addCurrentData({ commit }, payload) {
+    commit('addCurrentData', payload);
+  },
 };
 
 const getters = {
   getConversions(state) {
     return state.conversions;
+  },
+  getCurrentData(state) {
+    let data;
+    if (state.currentData) {
+      data = state.currentData;
+    } else {
+      data = null;
+    }
+    return data;
   },
 };
 
